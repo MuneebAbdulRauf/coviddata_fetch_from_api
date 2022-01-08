@@ -1,0 +1,34 @@
+// function that runs when shortcode is called
+function wpb_covid_shortcode() { 
+// Initiate curl session in a variable (resource)
+$curl_handle = curl_init();
+
+$url = 'https://api.corona-zahlen.org/districts/03460';
+
+// Set the curl URL option
+curl_setopt($curl_handle, CURLOPT_URL, $url);
+
+// This option will return data as a string instead of direct output
+curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
+
+// Execute curl & store data in a variable
+$curl_data = curl_exec($curl_handle);
+
+curl_close($curl_handle);
+
+// Decode JSON into PHP array
+$response_data = json_decode($curl_data);
+
+// All user data exists in 'data' object
+$user_data = $response_data->data;
+
+// Print data if need to debug
+//print_r($user_data);
+
+// Traverse array and display user data
+foreach ($user_data as $user) {
+	return number_format((float)$user->weekIncidence, 1, ',', '');
+}
+} 
+// register shortcode
+add_shortcode('coviddata', 'wpb_covid_shortcode');
